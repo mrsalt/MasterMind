@@ -7,14 +7,14 @@ const markerColors = {
 	blue: 'blue'
 }, markerCount = Object.keys(markerColors).length,
 markerRadius = 1 / 5,
-textHeight = 24,
+textHeight = 32,
 textPadding = 10,
 textFamily = 'Consolas';
 
 var canvas, boardImage, animateStartTime, animatingId;
 var boardX, boardY, boardWidth, boardHeight, cellSize, markerSizeY;
 var messages, messageDiv, okButton, onOKHandler;
-var mouseDown, dragging, mousePosition;
+var pointerDown, dragging, pointerPosition;
 
 function drawRoundedRectangle(ctx, x, y, width, height, radius)
 {
@@ -238,9 +238,9 @@ function loadBlankBoard()
 	
 	canvas = document.createElement('canvas');
 	canvas.className = 'board';
-	canvas.addEventListener('mousedown', mouseDownHandler);
-	canvas.addEventListener('mouseup', mouseUpHandler);
-	canvas.addEventListener('mousemove', mouseMoveHandler);
+	canvas.addEventListener('pointerdown', pointerDownHandler);
+	canvas.addEventListener('pointerup', pointerUpHandler);
+	canvas.addEventListener('pointermove', pointerMoveHandler);
 	
 	document.body.appendChild(messages);
 	document.body.appendChild(canvas);
@@ -297,9 +297,8 @@ function animateBoard(timestamp)
 	else
 		drawRow(ctx, guesses[guess], boardX, boardY + (rows - guess) * cellSize, undefined, outline);
 	//drawMarkerTray(ctx, outline);
-	
-	if (dragging && mousePosition) {
-		delta = {x: mousePosition.x - mouseDown.x, y: mousePosition.y - mouseDown.y};
+	if (dragging && pointerPosition) {
+		delta = {x: pointerPosition.x - pointerDown.x, y: pointerPosition.y - pointerDown.y};
 		if (dragging.area === 'markerTray') {
 			drawMarker(ctx, dragging.color, undefined, getMarkerPosition(dragging.color, delta));
 		}
@@ -373,7 +372,7 @@ function hitTest(point)
 	}
 }
 
-function mouseDownHandler(event)
+function pointerDownHandler(event)
 {
 	var point = eventToPoint(event),
 		hit = hitTest(point);
@@ -381,7 +380,7 @@ function mouseDownHandler(event)
 	    gameState !== GameState.Solve)
 		return;
 	if (hit) {
-		mouseDown = point;
+		pointerDown = point;
 		if (hit.area === 'markerTray') {
 			dragging = hit;
 		}
@@ -391,7 +390,7 @@ function mouseDownHandler(event)
 	}
 }
 
-function mouseUpHandler(event)
+function pointerUpHandler(event)
 {
 	var point = eventToPoint(event),
 		hit = hitTest(point),
@@ -416,14 +415,14 @@ function mouseUpHandler(event)
 			}
 		}
 	}
-	mouseDown = false;
-	mousePosition = false;
+	pointerDown = false;
+	pointerPosition = false;
 	dragging = false;
 }
 
-function mouseMoveHandler(event)
+function pointerMoveHandler(event)
 {
-	if (mouseDown) {
-		mousePosition = eventToPoint(event);
+	if (pointerDown) {
+		pointerPosition = eventToPoint(event);
 	}
 }
